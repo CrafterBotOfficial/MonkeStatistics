@@ -1,4 +1,4 @@
-﻿using MonkeStatistics.Core.Behaviors;
+﻿using MonkeStatistics.Behaviors;
 using UnityEngine;
 
 namespace MonkeStatistics.API
@@ -25,10 +25,14 @@ namespace MonkeStatistics.API
                 return;
 
             if (Info.buttonType == ButtonInfo.ButtonType.Toggle)
+            {
                 StartCoroutine(ToggleDelay(Info));
+                UIManager.CurrentPage.OnButtonPress(Info);
+            }
             else
             {
                 StartCoroutine(ButtonDelay());
+                UIManager.CurrentPage.OnButtonPress(Info);
                 Info.RaiseEvent(true);
             }
         }
@@ -61,8 +65,23 @@ namespace MonkeStatistics.API
         public event EventHandler ButtonPressed;
         public void RaiseEvent(bool IsOn)
         {
-            object[] Args = new object[] { ReturnIndex, IsOn, buttonType };
-            ButtonPressed?.Invoke(this, Args);
+            try
+            {
+                if (ButtonPressed is object)
+                {
+                    object[] Args = new object[] { ReturnIndex, IsOn, buttonType };
+                    ButtonPressed?.Invoke(this, Args);
+                }
+                else
+                {
+                    UIManager.CurrentPage.OnButtonPress(this);
+                    UIManager.CurrentPage.OnButtonPress(ReturnIndex);
+                }
+            }
+            catch
+            {
+
+            }
         }
         /// <summary>
         /// Line button info
@@ -71,6 +90,20 @@ namespace MonkeStatistics.API
         {
             this.ButtonPressed = ButtonPressed;
             this.ReturnIndex = ReturnIndex;
+            buttonType = Type;
+            this.InitialIsOn = InitialIsOn;
+            InitialDelay = 0.1f;
+        }
+        public ButtonInfo(int ReturnIndex, ButtonType Type = ButtonType.Press, bool InitialIsOn = false)
+        {
+            this.ReturnIndex = ReturnIndex;
+            buttonType = Type;
+            this.InitialIsOn = InitialIsOn;
+            InitialDelay = 0.1f;
+        }
+        public ButtonInfo(EventHandler ButtonPressed, ButtonType Type = ButtonType.Press, bool InitialIsOn = false)
+        {
+            this.ButtonPressed = ButtonPressed;
             buttonType = Type;
             this.InitialIsOn = InitialIsOn;
             InitialDelay = 0.1f;

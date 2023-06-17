@@ -1,7 +1,8 @@
 ﻿/*
     This script is highly inspired by the ComputerInterface mod.
 */
-using MonkeStatistics.Core;
+using MonkeStatistics.Behaviors;
+using MonkeStatistics.Pages;
 using System;
 using System.Linq;
 using UnityEngine;
@@ -27,12 +28,25 @@ namespace MonkeStatistics.API
             TextLines = new Line[0];
         }
         /// <summary>
+        /// Executes whenever a button is pressed.
+        /// </summary>
+        /// <param name="Info">The button info of the button that was pressed.</param>
+        public virtual void OnButtonPress(ButtonInfo Info)
+        {
+        }
+        /// <summary>
+        /// Executes whenever a button is pressed.
+        /// </summary>
+        public virtual void OnButtonPress(int ReturnIndex)
+        {
+        }
+        /// <summary>
         /// If you change this value you MUST reset it to the Core.Pages.MainMenu
         /// </summary>
         /// <param name="type">Page to return to.</param>
         public void SetBackButtonOverride(Type type)
         {
-            Core.Behaviors.GoToMainMenuButton.ReturnPage = type;
+            GoToMainMenuButton.ReturnPage = type;
         }
         /// <summary>
         /// A shortcut to the UIManager's ShowPage method.
@@ -47,7 +61,7 @@ namespace MonkeStatistics.API
         /// Opens the main page.
         /// </summary>
         public void GoToMainPage() =>
-            UIManager.Instance.ShowPage(typeof(Core.Pages.MainPage));
+            UIManager.Instance.ShowPage(typeof(MainPage));
 
         #region Text
         public void SetTitle(string text) =>

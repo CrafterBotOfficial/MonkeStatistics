@@ -1,6 +1,4 @@
-﻿using MonkeStatistics.Core;
-
-namespace MonkeStatistics.API
+﻿namespace MonkeStatistics.API
 {
     public class GetActivePage
     {
