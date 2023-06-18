@@ -26,7 +26,7 @@ namespace Scoreboard.Pages
             for (int i = 0; i < PhotonNetwork.CurrentRoom.PlayerCount; i++)
             {
                 var player = PhotonNetwork.PlayerList[i];
-                bool IsMuted = PlayerPrefs.GetInt(player.UserId, 0) == 1;
+                bool IsMuted = PlayerPrefs.GetInt(player.UserId) == 1;
                 if (player.IsLocal)
                     AddLine(player.NickName);
                 else

@@ -11,8 +11,8 @@ namespace MonkeStatistics.Behaviors
             Vector3 TargetPosition = new Vector3(Player.Instance.headCollider.transform.position.x, transform.position.y, Player.Instance.headCollider.transform.position.z);
             transform.LookAt(TargetPosition);
 
-            Vector3 LerpedPosition = Vector3.Lerp(transform.position, Target.position + Vector3.up * 0.2f, 10f);
-            transform.position = LerpedPosition;
+            Vector3 TargettedPosition = Target.position + Vector3.up * .2f;
+            transform.position = TargettedPosition;
         }
     }
 }
