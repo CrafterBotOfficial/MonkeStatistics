@@ -4,6 +4,9 @@ A simple player statistic tracker for Gorilla Tag.
 To install this mod, drag and drop the contents of the ZIP file into your Gorilla Tag folder.
 ## For Developer
 Please note this mod is mainly designed for showing statistics the buttons are suppose to be a secondary feature. But lets begin.
+### API Changes
+* The ``Registry.AddAssembly()`` method has been replaced by ``Registry.Register()``
+* Added new callbacks methods to the Page :  ``OnButtonPress(ButtonInfo Info)`` ``OnButtonPress(int ReturnIndex)``
 ### Settings up
 To start your project, add MonkeStatistics as a BepInEx dependencies. ``[BepInDependency("Crafterbot.MonkeStatistics")]`` Then add
 MonkeStatistics as a dependencies in Visual Studios(or your preferred IDE). To ensure it is added correctly, in your main file reference it at ``using MonkeStatistics.API``. If there is a red line under that statement, trouble shoot or something.
