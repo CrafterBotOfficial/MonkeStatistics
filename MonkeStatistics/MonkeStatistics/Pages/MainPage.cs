@@ -21,7 +21,7 @@ namespace MonkeStatistics.Pages
             GoToMainMenuButton.ReturnPage = typeof(MainPage);
 
             SetLines();
-            SetTitle(Main.NAME);
+            SetTitle(Main.Name);
             SetAuthor("By Crafterbot");
         }
         private void Info_ButtonPressed(object Sender, object[] Args)

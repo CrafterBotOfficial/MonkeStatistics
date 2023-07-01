@@ -13,14 +13,14 @@ using Utilla;
 
 namespace MonkeStatistics
 {
-    [BepInPlugin(GUID, NAME, VERSION), BepInDependency("org.legoandmars.gorillatag.utilla")]
+    [BepInPlugin(Id, Name, Version), BepInDependency("org.legoandmars.gorillatag.utilla")]
     [ModdedGamemode]
     internal class Main : BaseUnityPlugin
     {
         internal const string
-            GUID = "Crafterbot.MonkeStatistics",
-            NAME = "MonkeStatistics",
-            VERSION = "1.0.4";
+            Id = "Crafterbot.MonkeStatistics",
+            Name = "MonkeStatistics",
+            Version = "1.0.5";
         internal static Main Instance;
 
         internal ManualLogSource manualLogSource => Logger;
@@ -32,7 +32,7 @@ namespace MonkeStatistics
             API.Registry.Register();
 
             Utilla.Events.RoomLeft += Events_RoomLeft;
-            new HarmonyLib.Harmony(GUID).PatchAll(Assembly.GetExecutingAssembly());
+            new HarmonyLib.Harmony(Id).PatchAll(Assembly.GetExecutingAssembly());
         }
 
         private AssetBundle _assetBundle;

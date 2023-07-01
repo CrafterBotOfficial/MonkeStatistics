@@ -11,8 +11,11 @@ namespace MonkeStatistics.Behaviors
         {
             Instance = this;
             gameObject.layer = 18;
+
+            onPressButton = new UnityEngine.Events.UnityEvent();
+            onPressButton.AddListener(new UnityEngine.Events.UnityAction(ButtonActivation));
         }
-        public override void ButtonActivation()
+        public void ButtonActivation()
         {
             if (GetFacingUp())
                 UIManager.Instance.WatchButtonPressed();

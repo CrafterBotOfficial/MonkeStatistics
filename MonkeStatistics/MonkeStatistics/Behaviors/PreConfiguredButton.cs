@@ -21,6 +21,14 @@ namespace MonkeStatistics.Behaviors
             unpressedMaterial = wardrobeItemButton.unpressedMaterial;
 
             buttonRenderer.material = unpressedMaterial;
+
+
+            onPressButton = new UnityEngine.Events.UnityEvent();
+            onPressButton.AddListener(new UnityEngine.Events.UnityAction(ButtonActivation));
+        }
+
+        public virtual void ButtonActivation()
+        {
         }
 
         public IEnumerator ToggleDelay(ButtonInfo Info = null)
