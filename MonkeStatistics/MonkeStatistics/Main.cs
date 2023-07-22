@@ -1,67 +1,71 @@
 ﻿using BepInEx;
-using BepInEx.Logging;
-using System.IO;
-/*
-    The code for this project is a bit underwelming, unfortantly I made this a while ago
-    and it has fallen under my current standards. I cannot rewrite it due to some other mods
-    requiring it:/
-*/
-using System.Reflection;
-using System.Threading.Tasks;
 using UnityEngine;
-using Utilla;
 
 namespace MonkeStatistics
 {
-    [BepInPlugin(Id, Name, Version), BepInDependency("org.legoandmars.gorillatag.utilla")]
-    [ModdedGamemode]
+    [BepInPlugin("Crafterbot.MonkeStatistics", "MonkeStatistics", "1.1.0")]
     internal class Main : BaseUnityPlugin
     {
-        internal const string
-            Id = "Crafterbot.MonkeStatistics",
-            Name = "MonkeStatistics",
-            Version = "1.0.5";
-        internal static Main Instance;
-
-        internal ManualLogSource manualLogSource => Logger;
-        internal bool RoomModded;
+        private static Main Instance;
 
         internal Main()
         {
             Instance = this;
-            API.Registry.Register();
+            Log("Initializing MonkeStatistics");
 
-            Utilla.Events.RoomLeft += Events_RoomLeft;
-            new HarmonyLib.Harmony(Id).PatchAll(Assembly.GetExecutingAssembly());
-        }
-
-        private AssetBundle _assetBundle;
-        internal async Task<GameObject> LoadAsset(string Name)
-        {
-            const string BundlePath = "MonkeStatistics.Resources.watch";
-            if (!(_assetBundle is object))
-                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(BundlePath))
-                {
-                    AssetBundleCreateRequest assetBundleCreateRequest = AssetBundle.LoadFromStreamAsync(stream);
-                    new WaitUntil(() => assetBundleCreateRequest.isDone);
-                    _assetBundle = assetBundleCreateRequest.assetBundle;
-                }
-            AssetBundleRequest assetBundleRequest = _assetBundle.LoadAssetAsync<GameObject>(Name);
-            new WaitUntil(() => assetBundleRequest.isDone);
-            return assetBundleRequest.asset as GameObject;
+            new HarmonyLib.Harmony(Info.Metadata.GUID).PatchAll(typeof(Patches));
         }
 
-        #region Game Events
-        [ModdedGamemodeJoin]
-        private void OnJoin()
+        internal static async void AppendWatchToRig(VRRig Rig)
         {
-            RoomModded = true;
+            Transform WatchTransform = (Instantiate(await LoadAsset("Watch"), Rig.transform.Find("/rig/body/shoulder.L/upper_arm.L/forearm.L/hand.L")) as GameObject).transform;
+
+            WatchTransform.SetParent(GameObject.Find("Global/Local VRRig/Local Gorilla Player/rig/body/shoulder.L/upper_arm.L/forearm.L/hand.L").transform);
+            WatchTransform.localPosition = new Vector3(0.0288f, 0.0267f, -0.004f);
+            WatchTransform.localRotation = Quaternion.Euler(-26.97f, 94.478f, -93.21101f);
+
+            if (Rig.isOfflineVRRig)
+            {
+                WatchTransform.gameObject.AddComponent<Behaviours.UIManager>();
+
+                GameObject Trigger = WatchTransform.Find("Trigger").gameObject;
+                Trigger.layer = 18;
+                // Trigger.AddComponent<>();
+            }
         }
-        private void Events_RoomLeft(object sender, Events.RoomJoinedArgs e)
+
+        internal static void DeappendWatchFromRig(VRRig Rig)
         {
-            RoomModded = false;
-            UIManager.Instance.ForceClose();
+            Transform WatchTransform = Rig.transform.Find("/rig/body/shoulder.L/upper_arm.L/forearm.L/hand.L/Watch(Clone)");
+            if (WatchTransform is object)
+                Destroy(WatchTransform.gameObject);
         }
-        #endregion
+
+        internal static async System.Threading.Tasks.Task<UnityEngine.Object> LoadAsset(string Name)
+        {
+            using (System.IO.Stream Stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("MonkeStatistics.Resources.watch"))
+            {
+                AssetBundleCreateRequest AssetBundleCreateRequest = AssetBundle.LoadFromStreamAsync(Stream);
+                await System.Threading.Tasks.Task.Run(() => AssetBundleCreateRequest.isDone); // prevents game from crashing
+                AssetBundleRequest assetBundleRequest = AssetBundleCreateRequest.assetBundle.LoadAssetAsync(Name, typeof(GameObject));
+                await System.Threading.Tasks.Task.Run(() => assetBundleRequest.isDone); // prevents game from crashing
+                return assetBundleRequest.asset;
+            }
+        }
+
+        internal static void Log(object data, BepInEx.Logging.LogLevel logLevel = BepInEx.Logging.LogLevel.Info)
+        {
+            if (Instance is object)
+                Instance.Logger.Log(logLevel, data);
+            else UnityEngine.Debug.Log($"[MonkeStatistics : {System.DateTime.Now.ToString("MM:dd:HH:ss")}]" + data);
+        }
+
+        internal static string GUID
+        {
+            get
+            {
+                return Instance.Info.Metadata.GUID;
+            }
+        }
     }
 }

@@ -3,26 +3,17 @@ using UnityEngine;
 
 namespace MonkeStatistics
 {
-    [HarmonyPatch]
     internal class Patches
     {
-        [HarmonyPatch(typeof(GorillaLocomotion.Player), "Awake"), HarmonyPostfix]
-        private static async void PlayerAwake()
+        [HarmonyPatch(typeof(GorillaTagger), "Start"), HarmonyPostfix]
+        private static void GorillaTagger_Start_Postfix()
         {
-            /* Creates the watch */
+            Main.Log("GorillaTagger.Start");
 
-            GameObject WatchObj = UnityEngine.Object.Instantiate(await Main.Instance.LoadAsset("Watch"));
-            Transform WatchTransform = WatchObj.transform;
+            new GameObject("Callbacks").AddComponent<Behaviours.Callbacks>();
 
-            WatchTransform.SetParent(GameObject.Find("Global/Local VRRig/Local Gorilla Player/rig/body/shoulder.L/upper_arm.L/forearm.L/hand.L").transform);
-            WatchTransform.localPosition = new Vector3(0.0288f, 0.0267f, -0.004f);
-            WatchTransform.localRotation = Quaternion.Euler(-26.97f, 94.478f, -93.21101f);
-
-            new UIManager(WatchObj);
-
-            GameObject Trigger = WatchTransform.Find("Trigger").gameObject;
-            Trigger.layer = 18;
-            Trigger.AddComponent<Behaviors.WatchButton>();
+            // Append the watch menu to the offline rig
+            Main.AppendWatchToRig(GorillaTagger.Instance.offlineVRRig);
         }
     }
 }
