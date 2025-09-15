@@ -9,7 +9,7 @@ public class ToggleButtonHandler : IButtonHandler
 {
     public event Action OnToggled_On;
     public event Action OnToggled_Off;
-    public event Action OnToggled;
+    public event Action<LineButton, bool> OnToggled;
     public bool Toggled { get; private set; }
 
     public void Press(LineButton button)
@@ -17,7 +17,8 @@ public class ToggleButtonHandler : IButtonHandler
         Toggled = !Toggled;
         button.SetMaterial(Toggled);
 
-        InvokeSafely(OnToggled);
+        try { OnToggled(button, true); }
+        catch (Exception ex) { Debug.LogError(ex); }
 
         if (Toggled)
             InvokeSafely(OnToggled_On);

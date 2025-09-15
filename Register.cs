@@ -19,15 +19,17 @@ public sealed class Register
 
     public Register()
     {
+        pages = [
+            new RoomInfo(),
+            new Scoreboard(),
+            new Audio(),
+        ];
         FindAllAuto();
-        pages.AddRange([
-            new RoomInfo()
-        ]);
     }
 
     public IPage[] GetPages()
     {
-        if (pages == null)
+        if (pages is null)
         {
             return [];
         }
@@ -36,10 +38,10 @@ public sealed class Register
 
     private void FindAllAuto()
     {
-        var assemblies = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Instance.GetType().Assembly).Where(x => x != typeof(Main).Assembly);
+        var assemblies = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Instance.GetType().Assembly); //.Where(x => x != typeof(Main).Assembly);
         var types = assemblies.SelectMany(x => x.GetTypes());
         var autoRegisterTypes = types.Where(x => x.GetCustomAttributes(typeof(AutoRegisterAttribute), false).Any() && IsPage(x));
-        pages = autoRegisterTypes.Select(x => Activator.CreateInstance(x) as IPage).ToList();
+        pages.AddRange(autoRegisterTypes.Select(x => Activator.CreateInstance(x) as IPage).ToList());
     }
 
     /// <summary>

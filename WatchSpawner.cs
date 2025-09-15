@@ -9,14 +9,14 @@ namespace MonkeStatistics;
 
 internal class WatchSpawner
 {
-    private static Lazy<WatchSpawner> instance = new Lazy<WatchSpawner>(() => new WatchSpawner());
-    public static WatchSpawner Instance => instance.Value;
+    public static WatchSpawner Instance { get; } = new();
 
     public async Task SpawnAll()
     {
         foreach (var rig in VRRigCache.Instance.GetAllRigs())
         {
-            await WatchSpawner.Instance.Spawn(rig);
+            if (rig.isLocal || rig.isMyPlayer) continue;
+            await Spawn(rig);
         }
         VRRig.LocalRig.AddComponent<UI.LocalWatchManager>();
     }
@@ -24,18 +24,33 @@ internal class WatchSpawner
     public async Task<Result> SpawnLocal()
     {
         var watch = await Spawn(VRRig.LocalRig);
-        watch.Find("Trigger").AddComponent<UI.Buttons.WatchFaceButton>();
+        CreateWatchFaceTrigger(watch);
 
         var menu = GameObject.Instantiate(await AssetLoader.Instance.GetAsset("MenuObj")).transform;
+        menu.AddComponent<MenuFollower>();
 
         var panel = menu.GetChild(0);
         var returnButton = panel.Find("ReturnMain").AddComponent<LineButton>();
         returnButton.ButtonHandler = new ReturnButtonHandler();
 
-        var lines = new UILine[10];
+        var lines = new UILine[UIManager.MAX_LINES];
         CreateLines(menu, lines);
 
-        return new Result(watch, menu, returnButton, lines);
+        // scroll buttons
+        var scrollDownButton = panel.Find("Down").AddComponent<LineButton>();
+        var scrollUpButton = panel.Find("Up").AddComponent<LineButton>();
+
+        scrollDownButton.gameObject.SetActive(false);
+        scrollUpButton.gameObject.SetActive(false);
+
+        return new Result(
+            watch,
+            menu,
+            returnButton,
+            lines,
+            scrollUpButton,
+            scrollDownButton
+        );
     }
 
     public async Task<Transform> Spawn(VRRig rig)
@@ -53,20 +68,28 @@ internal class WatchSpawner
         var lineParent = menu.GetChild(0).Find("Lines");
         var line = lineParent.GetChild(0);
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < UIManager.MAX_LINES; i++)
         {
             var lineObject = GameObject.Instantiate(line, lineParent).gameObject;
             lines[i] = new UILine(lineObject); // also creates the button
-            lines[i].MyObject.SetActive(false);
+            lines[i].Button.gameObject.SetActive(false);
         }
+        line.gameObject.SetActive(false); // template line
     }
 
-    public struct Result(Transform watch, Transform menu, LineButton returnButton, UILine[] lines)
+    private void CreateWatchFaceTrigger(Transform watch)
+    {
+        watch.Find("Trigger").AddComponent<WatchFaceButton>();
+    }
+
+    public record struct Result(Transform watch, Transform menu, LineButton returnButton, UILine[] lines, LineButton up, LineButton down)
     {
         public Transform Watch = watch;
         public Transform Menu = menu;
         public LineButton ReturnButton = returnButton;
         public UILine[] Lines = lines;
+        public LineButton ScrollUp = up;
+        public LineButton ScrollDown = down;
     }
 }
 

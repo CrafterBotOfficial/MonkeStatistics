@@ -34,7 +34,7 @@ public class LocalWatchManager : MonoBehaviour
         ReturnButton = result.ReturnButton;
         Lines = result.Lines;
 
-        UIManager = new UIManager(Menu);
+        UIManager = new UIManager(Menu, result.up, result.down);
     }
 
     public void EnumerateLines(Action<UILine> onLine)

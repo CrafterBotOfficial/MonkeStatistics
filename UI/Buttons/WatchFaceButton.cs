@@ -15,9 +15,11 @@ internal class WatchFaceButton : LineButton
 
     public override void OnPress()
     {
+        Main.Log("watch face press", BepInEx.Logging.LogLevel.Debug);
         if (GetFacingUp())
         {
             LocalWatchManager.Instance.ActivateMenu();
+            // LocalWatchManager.Instance.Menu.position = transform.position;
         }
     }
 

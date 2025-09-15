@@ -9,6 +9,16 @@ public class PressButtonHandler : IButtonHandler
 {
     public Action OnPressEvent;
 
+    public PressButtonHandler()
+    {
+
+    }
+
+    public PressButtonHandler(Action onPressEvent)
+    {
+        OnPressEvent = onPressEvent;
+    }
+
     public async void Press(LineButton button)
     {
         button.SetMaterial(true);

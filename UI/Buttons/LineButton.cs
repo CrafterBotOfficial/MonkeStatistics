@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace MonkeStatistics.UI.Buttons;
@@ -29,7 +30,13 @@ public class LineButton : MonoBehaviour
 
         if (GetComponent<Renderer>() is Renderer buttonRenderer)
         {
-            var wardrobeFunctionButton = FindObjectOfType<GorillaPressableButton>();
+            var wardrobeFunctionButton = (
+                from btn in FindObjectsByType<GorillaPressableButton>(FindObjectsSortMode.None)
+                where btn.pressedMaterial != null
+                where btn.unpressedMaterial != null
+                select btn
+            )
+            .FirstOrDefault();
             if (wardrobeFunctionButton == null)
             {
                 Main.Log("Not model button found to copy from.", BepInEx.Logging.LogLevel.Fatal);
@@ -39,10 +46,17 @@ public class LineButton : MonoBehaviour
             renderer = buttonRenderer;
             pressMaterial = wardrobeFunctionButton.pressedMaterial;
             unpressMaterial = wardrobeFunctionButton.unpressedMaterial;
+            OnEnable();
         }
     }
 
-    private void OnTriggerEntered(Collider other)
+    private void OnEnable()
+    {
+        renderer.material.shader = Shader.Find("Universal Render Pipeline/Lit"); //Shader.Find("GorillaTag/UberShader");
+        SetMaterial(false);
+    }
+
+    private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<GorillaTriggerColliderHandIndicator>() is not GorillaTriggerColliderHandIndicator indicator)
         {
@@ -71,7 +85,7 @@ public class LineButton : MonoBehaviour
     {
         try
         {
-            ButtonHandler.Press(this);
+            ButtonHandler?.Press(this);
         }
         catch (Exception ex)
         {

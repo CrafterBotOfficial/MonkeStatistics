@@ -1,5 +1,7 @@
 using System.Text;
+using Constants;
 using GorillaGameModes;
+using MonkeStatistics.Extensions;
 using MonkeStatistics.UI;
 using MonkeStatistics.UI.Buttons;
 
@@ -9,22 +11,37 @@ public class RoomInfo : IPage
 {
     public string GetName() => "Room Info";
 
+    public RoomInfo()
+    {
+        NetworkSystem.Instance.OnJoinedRoomEvent += RefreshPage;
+        NetworkSystem.Instance.OnReturnedToSinglePlayer += RefreshPage;
+        NetworkSystem.Instance.OnPlayerJoined += _ => RefreshPage();
+        NetworkSystem.Instance.OnPlayerLeft += _ => RefreshPage();
+    }
+
+    private void RefreshPage()
+    {
+        if (this.IsActive()) // stops warnings
+        {
+            this.Redraw();
+        }
+    }
+
     public Content GetContent()
     {
         if (NetworkSystem.Instance is not NetworkSystem network)
-            return new Content("Error");
+            return PageBuilder.GetErrorPage("NetworkSystem isn't setup yet!");
 
         if (NetworkSystem.Instance.InRoom)
         {
             var builder = new PageBuilder();
-            builder.AddText(string.Format("Name: {0}", network.RoomName));
-            builder.AddText(string.Format("Players: {0}/{1}", network.AllNetPlayers.Length, network.CurrentRoom.MaxPlayers));
-            builder.AddText("GameMode: " + GorillaGameManager.instance.GameModeName() ?? "Unknown");
+            builder.AddText("Name: {0}", network.RoomName);
+            builder.AddText("Players: {0}/{1}", network.AllNetPlayers.Length, network.CurrentRoom.MaxPlayers);
+            builder.AddText("GameMode: {0}", GorillaGameManager.instance.GameModeName() ?? "Unknown");
 
             builder.AddSpacing(1);
 
-            var line = builder.AddLine("Disconnect", Content.ButtonType.Press);
-            (line.ButtonHandler as PressButtonHandler).OnPressEvent += Disconnect;
+            var line = builder.AddLine("Disconnect", Disconnect); // Always be press button
 
             return builder.GetContent();
         }
@@ -36,7 +53,7 @@ public class RoomInfo : IPage
 
     private void Disconnect()
     {
-        Main.Log("Disconnecting... sneaking sneaky");
+        Main.Log("Disconnecting... sneaky");
         NetworkSystem.Instance.ReturnToSinglePlayer();
     }
 }

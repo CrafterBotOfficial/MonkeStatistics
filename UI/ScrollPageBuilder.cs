@@ -1,29 +1,28 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
+using System.Runtime.InteropServices;
 using MonkeStatistics.UI.Buttons;
 
 namespace MonkeStatistics.UI;
 
+// Should probably simplify this by removing the pagebuilder alltogether and only having scroll pages;
 public class ScrollPageBuilder : PageBuilder
 {
-    private const int ENTRIES_PER_PAGE = 10;
-
-    internal int Scene;
     internal List<Content.Line> builderLines = new List<Content.Line>();
 
     private Content.Line[] GetLines()
     {
-        if (builderLines.Count < 10)
+        if (builderLines.Count < UI.UIManager.MAX_LINES)
         {
             return builderLines.ToArray();
         }
 
-        var chunks = builderLines.Select((v, i) => new { v, groupIndex = i / ENTRIES_PER_PAGE })
-                                 .GroupBy(x => x.groupIndex)
-                                 .Select(g => g.Select(x => x.v))
-                                 .ToArray();
+        int groupIndex = 0;
+        var chunks = builderLines.GroupBy(line => groupIndex++ / UIManager.MAX_LINES);
 
-        return chunks[Scene].ToArray();
+        return chunks.ElementAt(LocalWatchManager.Instance.UIManager.SceneIndex).ToArray();
     }
 
     public override void AddSpacing(int count)
@@ -39,6 +38,22 @@ public class ScrollPageBuilder : PageBuilder
         return line;
     }
 
+    public override Content.Line AddLine(string text, Action<LineButton, bool> onToggle)
+    {
+        var line = new Content.Line(text, Content.ButtonType.Toggle);
+        (line.ButtonHandler as ToggleButtonHandler).OnToggled += onToggle;
+        builderLines.Add(line);
+        return line;
+    }
+
+    public override Content.Line AddLine(string text, Action onPress)
+    {
+        var line = new Content.Line(text, Content.ButtonType.Press);
+        (line.ButtonHandler as PressButtonHandler).OnPressEvent = onPress;
+        builderLines.Add(line);
+        return line;
+    }
+
     public override Content.Line AddLine(string text, IButtonHandler buttonHandler)
     {
         var line = new Content.Line(text, buttonHandler);
@@ -46,10 +61,12 @@ public class ScrollPageBuilder : PageBuilder
         return line;
     }
 
-
     public override Content GetContent()
     {
-        Content.Lines = GetLines();
+        var chunk = GetLines();
+        for (int i = 0; i < chunk.Length; i++)
+            Content.Lines[i] = chunk[i];
+        Content.ShowScrollButtons = true;
         return Content;
     }
 }

@@ -1,15 +1,17 @@
+using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
+using GorillaTagScripts.CustomMapSupport;
 using MonkeStatistics.UI.Buttons;
 
 namespace MonkeStatistics.UI;
 
-public class PageBuilder
+public partial class PageBuilder
 {
     internal Content Content;
     private int lineIndex;
 
-    public int RemainingLines => 10 - lineIndex;
+    public int RemainingLines => UIManager.MAX_LINES - lineIndex;
 
     public PageBuilder()
     {
@@ -18,12 +20,12 @@ public class PageBuilder
 
     public void SetAuthor(string text)
     {
-        Content.SetAuthor(text);
+        Content.Author = text;
     }
 
     public virtual void AddSpacing(int count)
     {
-        if (lineIndex + count >= 10)
+        if (lineIndex + count >= UIManager.MAX_LINES)
         {
             Main.Log("Cannot add spacing outside array, consider using a ScrollPageBuilder instead.", BepInEx.Logging.LogLevel.Warning);
             return;
@@ -31,9 +33,57 @@ public class PageBuilder
         lineIndex += count;
     }
 
+    public virtual void AddText(string template, params object[] args)
+    {
+        string format = string.Format(template, args);
+        AddText(format);
+    }
+
     public virtual void AddText(string text)
     {
-        AddLine(text, Content.ButtonType.None);
+        const int lineLength = 17;
+        int lineCount = (int)Math.Ceiling((double)text.Length / lineLength);
+
+        if (0 > RemainingLines - lineCount)
+            Main.Log("AddText will try to add more lines then allowed, use scroll page builder instead.", BepInEx.Logging.LogLevel.Warning);
+
+        for (int lineIndex = 0; lineIndex < lineCount; lineIndex++)
+        {
+            int start = lineIndex * lineLength;
+            int length = Math.Min(lineLength, text.Length - start);
+            string line = text.Substring(start, length);
+
+            AddLine(line);
+        }
+    }
+
+    public virtual Content.Line AddLine(string text)
+    {
+        if (MaxLinesReached()) return default;
+        var line = new Content.Line(text);
+        Content.Lines[lineIndex] = line;
+        lineIndex++;
+        return line;
+    }
+
+    public virtual Content.Line AddLine(string text, Action<LineButton, bool> onToggle)
+    {
+        if (MaxLinesReached()) return default;
+        var line = new Content.Line(text, Content.ButtonType.Toggle);
+        (line.ButtonHandler as ToggleButtonHandler).OnToggled += onToggle;
+        Content.Lines[lineIndex] = line;
+        lineIndex++;
+        return line;
+    }
+
+    public virtual Content.Line AddLine(string text, Action onPress)
+    {
+        if (MaxLinesReached()) return default;
+        var line = new Content.Line(text, Content.ButtonType.Press);
+        (line.ButtonHandler as PressButtonHandler).OnPressEvent = onPress;
+        Content.Lines[lineIndex] = line;
+        lineIndex++;
+        return line;
     }
 
     public virtual Content.Line AddLine(string text, Content.ButtonType buttonType)

@@ -4,35 +4,29 @@ using MonkeStatistics.UI.Buttons;
 
 namespace MonkeStatistics.Pages;
 
-internal class MainPage : IPage
+public class MainPage : IPage
 {
     public string GetName() => "Monke Statistics";
 
     public Content GetContent()
     {
-        var scrollBuilder = new ScrollPageBuilder();
-
         var pages = Register.Instance.GetPages();
-        if (pages == null || pages.Length == 0)
+        if (pages is null || pages.Length == 0)
         {
-            Main.Log("No pages in registery, maybe it was robbed?", BepInEx.Logging.LogLevel.Fatal);
-            goto null_end;
+            Main.Log("No pages in registery, maybe it was robbed?", BepInEx.Logging.LogLevel.Error);
+            return PageBuilder.GetErrorPage("No pages");
         }
 
-        foreach (var page in pages)
-        {
-            scrollBuilder.AddLine(page.GetName(), new OpenPageButton(page));
-        }
+        var scrollBuilder = new ScrollPageBuilder();
+        pages.ForEach(page =>
+            scrollBuilder.AddLine(page.GetName(), () => SwitchPage(page))
+        );
 
-null_end:
         return scrollBuilder.GetContent();
     }
 
-    private class OpenPageButton(IPage page) : IButtonHandler
+    private void SwitchPage(IPage page)
     {
-        public void Press(LineButton myButton)
-        {
-            LocalWatchManager.Instance.UIManager.SwitchPage(page);
-        }
+        LocalWatchManager.Instance.UIManager.SwitchPage(page);
     }
 }
