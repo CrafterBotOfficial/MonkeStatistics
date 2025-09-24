@@ -11,6 +11,8 @@ public class LineButton : MonoBehaviour
     private const float DEBOUNCE_PERIOD = .25f;
     private float debounceTime;
 
+    private bool initialized;
+
     private Renderer renderer;
     private Material pressMaterial;
     private Material unpressMaterial;
@@ -48,11 +50,18 @@ public class LineButton : MonoBehaviour
             unpressMaterial = wardrobeFunctionButton.unpressedMaterial;
             OnEnable();
         }
+
+        initialized = true;
+        OnEnable(); // force fix for shaders
     }
 
     private void OnEnable()
     {
-        renderer.material.shader = Shader.Find("Universal Render Pipeline/Lit"); //Shader.Find("GorillaTag/UberShader");
+        if (!initialized)
+        {
+            return;
+        }
+        renderer.material.shader = UberShader.GetShader(); // Shader.Find("Universal Render Pipeline/Lit"); //Shader.Find("GorillaTag/UberShader");
         SetMaterial(false);
     }
 

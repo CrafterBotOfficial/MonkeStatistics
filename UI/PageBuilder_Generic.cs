@@ -8,6 +8,7 @@ public partial class PageBuilder
     // TODO: Make look fabules
     public static Content GetErrorPage(string errorMessage)
     {
+        Main.Log(errorMessage, BepInEx.Logging.LogLevel.Error);
         var builder = new ScrollPageBuilder();
         builder.AddText("[Error]");
         builder.AddText(errorMessage);

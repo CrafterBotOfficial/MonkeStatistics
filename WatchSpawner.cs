@@ -11,7 +11,7 @@ internal class WatchSpawner
 {
     public static WatchSpawner Instance { get; } = new();
 
-    public async Task SpawnAll()
+    public async Task SpawnOther()
     {
         foreach (var rig in VRRigCache.Instance.GetAllRigs())
         {
@@ -56,9 +56,10 @@ internal class WatchSpawner
     public async Task<Transform> Spawn(VRRig rig)
     {
         var watch = GameObject.Instantiate(await AssetLoader.Instance.GetAsset("Watch")).transform;
-        watch.parent = rig.leftHandTransform;
+        watch.parent = Configuration.WatchHand.Value == Configuration.Hand.Left ? rig.leftHandTransform : rig.rightHandTransform;
         watch.localPosition = new Vector3(0.0288f, 0.0267f, -0.004f);
-        watch.localRotation = Quaternion.Euler(-26.97f, 94.478f, -93.21101f);
+        watch.localRotation = Quaternion.Euler(-26.97f, 94.478f, -93.21101f); // TODO Make chin give me offsets for when the watch is on the right hand
+        watch.localScale = new Vector3(2.1f, 2.6f, 2.1f);
 
         return watch;
     }

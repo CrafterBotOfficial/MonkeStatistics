@@ -11,10 +11,10 @@ internal class Main : BaseUnityPlugin
     private void Awake()
     {
         instance = this;
-        GorillaTagger.OnPlayerSpawned(async () =>
+        Configuration.Initialize(Config);
+        GorillaTagger.OnPlayerSpawned(() =>
         {
-            await WatchSpawner.Instance.SpawnAll();
-            Main.Log("Finished spawn proc");
+            _ = WatchSpawner.Instance.SpawnOther();
         });
     }
 

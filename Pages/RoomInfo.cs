@@ -4,6 +4,7 @@ using GorillaGameModes;
 using MonkeStatistics.Extensions;
 using MonkeStatistics.UI;
 using MonkeStatistics.UI.Buttons;
+using Photon.Pun;
 
 namespace MonkeStatistics.Pages;
 
@@ -34,10 +35,12 @@ public class RoomInfo : IPage
 
         if (NetworkSystem.Instance.InRoom)
         {
+            int maxPlayers = PhotonNetwork.CurrentRoom.MaxPlayers; // TODO Use network system, note the currentroom is null
+
             var builder = new PageBuilder();
             builder.AddText("Name: {0}", network.RoomName);
-            builder.AddText("Players: {0}/{1}", network.AllNetPlayers.Length, network.CurrentRoom.MaxPlayers);
-            builder.AddText("GameMode: {0}", GorillaGameManager.instance.GameModeName() ?? "Unknown");
+            builder.AddText("Players: {0}/{1}", network.AllNetPlayers.Length, maxPlayers);
+            builder.AddText("GameMode: {0}", GorillaGameManager.instance?.GameModeName() ?? "Unknown");
 
             builder.AddSpacing(1);
 

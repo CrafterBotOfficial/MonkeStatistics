@@ -36,6 +36,7 @@ public class UIManager
         scrollDownButton.ButtonHandler = new PressButtonHandler(() => OnScrollButton(1));
 
         MainPage = new MainPage();
+        ReturnPage = MainPage;
         SwitchPage(MainPage);
     }
 
@@ -63,7 +64,7 @@ public class UIManager
         Main.Log("Setting page to " + newPage.GetName());
 
         SceneIndex = 0;
-        ReturnPage = CurrentPage;
+        // ReturnPage = CurrentPage;
         CurrentPage = newPage;
         SetLines();
     }

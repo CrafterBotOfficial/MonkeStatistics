@@ -2,7 +2,7 @@ using GorillaLocomotion;
 using MonkeStatistics.UI;
 using UnityEngine;
 
-namespace MonkeStatistics;
+namespace MonkeStatistics.UI;
 
 internal class MenuFollower : MonoBehaviour
 {
