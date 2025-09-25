@@ -9,13 +9,12 @@ namespace MonkeStatistics.Pages;
 
 public class Scoreboard : IPage
 {
-    public static Scoreboard Instance;
-
     public string GetName() => "Scoreboard";
 
     public Scoreboard()
     {
-        Instance = this;
+        NetworkSystem.Instance.OnPlayerJoined += _ => UpdateScoreboard();
+        NetworkSystem.Instance.OnPlayerLeft += _ => UpdateScoreboard();
     }
 
     public void UpdateScoreboard()
@@ -68,7 +67,7 @@ public class Scoreboard : IPage
                 var playerLine = spawner.currentScoreboard.lines.Find(line => line.playerActorNumber == Player.ActorNumber);
                 if (playerLine == null)
                 {
-                    Main.Log("No player line", BepInEx.Logging.LogLevel.Error);
+                    Main.Log("No player line, maybe it hasn't spawned yet?", BepInEx.Logging.LogLevel.Warning);
                     return;
                 }
                 bool muted = playerLine.mute != 0;

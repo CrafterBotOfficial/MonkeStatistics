@@ -52,7 +52,9 @@ public class LineButton : MonoBehaviour
         }
 
         initialized = true;
-        OnEnable(); // force fix for shaders
+
+        SetMaterial(false);
+        renderer.material.shader = UberShader.GetShader(); // Shader.Find("Universal Render Pipeline/Lit"); //Shader.Find("GorillaTag/UberShader");
     }
 
     private void OnEnable()
@@ -61,7 +63,6 @@ public class LineButton : MonoBehaviour
         {
             return;
         }
-        renderer.material.shader = UberShader.GetShader(); // Shader.Find("Universal Render Pipeline/Lit"); //Shader.Find("GorillaTag/UberShader");
         SetMaterial(false);
     }
 

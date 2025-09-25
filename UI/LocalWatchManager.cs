@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using MonkeStatistics.UI.Buttons;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,7 +19,7 @@ public class LocalWatchManager : MonoBehaviour
     public LineButton ReturnButton;
     public UILine[] Lines;
 
-    private async void Awake()
+    private async Task Awake()
     {
         if (Instance != null)
         {

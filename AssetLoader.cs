@@ -18,6 +18,7 @@ internal class AssetLoader
 
     private Task<AssetBundle> LoadBundle()
     {
+        Main.Log("Load task started");
         var completionSource = new TaskCompletionSource<AssetBundle>();
 
         var stream = typeof(Main).Assembly.GetManifestResourceStream("MonkeStatistics.Resources.watch");
@@ -26,6 +27,7 @@ internal class AssetLoader
         {
             stream.Dispose();
             completionSource.SetResult(loadRequest.assetBundle);
+            Main.Log("Finished loading bundle", BepInEx.Logging.LogLevel.Debug);
         };
 
         return completionSource.Task;
@@ -34,6 +36,8 @@ internal class AssetLoader
     public async Task<GameObject> GetAsset(string name)
     {
         var bundle = await loadBundleTask;
-        return bundle.LoadAsset<GameObject>(name);
+        var loadRequest = bundle.LoadAssetAsync<GameObject>(name);
+        await loadRequest;
+        return loadRequest.asset as GameObject;
     }
 }

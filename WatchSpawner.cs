@@ -4,6 +4,8 @@ using UnityEngine;
 using MonkeStatistics.UI;
 using MonkeStatistics.UI.Buttons;
 using UnityEngine.UI;
+using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace MonkeStatistics;
 
@@ -11,12 +13,22 @@ internal class WatchSpawner
 {
     public static WatchSpawner Instance { get; } = new();
 
-    public async Task SpawnOther()
+    public Dictionary<VRRig, GameObject> Watches;
+    private GameObject watchPrefab;
+
+    public async Task SpawnAll()
     {
-        foreach (var rig in VRRigCache.Instance.GetAllRigs())
+        if (Watches is not null)
+            return;
+        Watches = new Dictionary<VRRig, GameObject>(VRRigCache.Instance.rigAmount);
+
+        var rigs = VRRigCache.Instance.GetAllRigs();
+        foreach (var rig in rigs)
         {
             if (rig.isLocal || rig.isMyPlayer) continue;
-            await Spawn(rig);
+
+            var watch = await Spawn(rig);
+            Watches.Add(rig, watch.gameObject);
         }
         VRRig.LocalRig.AddComponent<UI.LocalWatchManager>();
     }
@@ -55,8 +67,13 @@ internal class WatchSpawner
 
     public async Task<Transform> Spawn(VRRig rig)
     {
-        var watch = GameObject.Instantiate(await AssetLoader.Instance.GetAsset("Watch")).transform;
-        watch.parent = Configuration.WatchHand.Value == Configuration.Hand.Left ? rig.leftHandTransform : rig.rightHandTransform;
+        if (watchPrefab is null)
+        {
+            watchPrefab = await AssetLoader.Instance.GetAsset("Watch");
+        }
+
+        var watch = GameObject.Instantiate(watchPrefab).transform;
+        watch.parent = rig.leftHandTransform; // Configuration.WatchHand.Value == Configuration.Hand.Left ? rig.leftHandTransform : rig.rightHandTransform;
         watch.localPosition = new Vector3(0.0288f, 0.0267f, -0.004f);
         watch.localRotation = Quaternion.Euler(-26.97f, 94.478f, -93.21101f); // TODO Make chin give me offsets for when the watch is on the right hand
         watch.localScale = new Vector3(2.1f, 2.6f, 2.1f);
