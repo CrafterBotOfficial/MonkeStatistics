@@ -4,7 +4,7 @@ using MonkeStatistics.UI.Buttons;
 
 namespace MonkeStatistics.Pages;
 
-public class Audio : IPage
+internal class Audio : IPage
 {
     public static Audio Instance;
 

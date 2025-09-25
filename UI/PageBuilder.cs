@@ -11,6 +11,9 @@ public partial class PageBuilder
     internal Content Content;
     private int lineIndex;
 
+    /// <summary>
+    /// The amount of lines you have left before you reach the end of the page.
+    /// </summary>
     public int RemainingLines => UIManager.MAX_LINES - lineIndex;
 
     public PageBuilder()
@@ -18,11 +21,17 @@ public partial class PageBuilder
         Content = new Content();
     }
 
+    /// <summary>
+    /// The subtitle of the page, displayed smaller then the main title IPage.GetName()
+    /// </summary>
     public void SetAuthor(string text)
     {
         Content.Author = text;
     }
 
+    /// <summary>
+    /// Adds x amount of blank lines to the page, but will add none if there aren't enough lines left.
+    /// </summary>
     public virtual void AddSpacing(int count)
     {
         if (lineIndex + count >= UIManager.MAX_LINES)
@@ -33,12 +42,18 @@ public partial class PageBuilder
         lineIndex += count;
     }
 
+    /// <summary>
+    /// Adds line(s) with the text on it but only if there is enough room left.
+    /// </summary>
     public virtual void AddText(string template, params object[] args)
     {
         string format = string.Format(template, args);
         AddText(format);
     }
 
+    /// <summary>
+    /// Adds line(s) with the text on it but only if there is enough room left.
+    /// </summary>
     public virtual void AddText(string text)
     {
         const int lineLength = 17;
@@ -57,6 +72,9 @@ public partial class PageBuilder
         }
     }
 
+    /// <summary>
+    /// Adds a line with no button, only text.
+    /// </summary>
     public virtual Content.Line AddLine(string text)
     {
         if (MaxLinesReached()) return default;
@@ -66,6 +84,9 @@ public partial class PageBuilder
         return line;
     }
 
+    /// <summary>
+    /// Adds a line with a **toggle** button
+    /// </summary>
     public virtual Content.Line AddLine(string text, Action<LineButton, bool> onToggle)
     {
         if (MaxLinesReached()) return default;
@@ -76,6 +97,9 @@ public partial class PageBuilder
         return line;
     }
 
+    /// <summary>
+    /// Adds a line with a **non**-toggle button
+    /// </summary>
     public virtual Content.Line AddLine(string text, Action onPress)
     {
         if (MaxLinesReached()) return default;
@@ -86,6 +110,9 @@ public partial class PageBuilder
         return line;
     }
 
+    /// <summary>
+    /// Adds a line with a premade button handler
+    /// </summary>
     public virtual Content.Line AddLine(string text, Content.ButtonType buttonType)
     {
         if (MaxLinesReached()) return default;
@@ -95,6 +122,9 @@ public partial class PageBuilder
         return line;
     }
 
+    /// <summary>
+    /// Adds a line with a custom button handler
+    /// </summary>
     public virtual Content.Line AddLine(string text, IButtonHandler buttonHandler)
     {
         if (MaxLinesReached()) return default;
@@ -114,6 +144,9 @@ public partial class PageBuilder
         return false;
     }
 
+    /// <summary>
+    /// Gets the new content for the page.
+    /// </summary>
     public virtual Content GetContent()
     {
         return Content;

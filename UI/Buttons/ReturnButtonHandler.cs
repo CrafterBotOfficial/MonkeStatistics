@@ -2,7 +2,7 @@ using MonkeStatistics.Pages;
 
 namespace MonkeStatistics.UI.Buttons;
 
-public class ReturnButtonHandler : IButtonHandler
+internal class ReturnButtonHandler : IButtonHandler
 {
     public void Press(LineButton button)
     {

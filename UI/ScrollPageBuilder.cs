@@ -61,6 +61,9 @@ public class ScrollPageBuilder : PageBuilder
         return line;
     }
 
+    /// <summary>
+    /// Gets the lines that **should** be displayed on this page.
+    /// </summary>
     public override Content GetContent()
     {
         var chunk = GetLines();

@@ -7,7 +7,7 @@ using MonkeStatistics.UI.Buttons;
 namespace MonkeStatistics.Pages;
 
 [AutoRegister]
-public class ScrollPageTest : IPage
+internal class ScrollPageTest : IPage
 {
     public string GetName() => "Scroll Page Test";
 

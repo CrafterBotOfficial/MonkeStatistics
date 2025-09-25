@@ -1,0 +1,8 @@
+# DocFX generated output and intermediates
+_site/
+_site_pdf/
+**/api/
+**/obj/Docs/
+api/*.yml
+api/.manifest
+docs/api/

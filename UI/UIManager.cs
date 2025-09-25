@@ -12,18 +12,21 @@ public class UIManager
     public IPage CurrentPage { get; private set; }
     public const int MAX_LINES = 10;
 
+    /// <summary>
+    /// The page that the "return" button points to.
+    /// </summary>
     public IPage ReturnPage;
 
-    public MainPage MainPage;
+    internal MainPage MainPage;
     private Text titleField;
     private Text authorField;
     private LineButton scrollDownButton;
     private LineButton scrollUpButton;
 
-    public bool ShowScrollButtons;
-    public int SceneIndex; // for scroll page
+    internal bool ShowScrollButtons;
+    internal int SceneIndex; // for scroll page
 
-    public UIManager(Transform menu, LineButton scrollUp, LineButton scrollDown)
+    internal UIManager(Transform menu, LineButton scrollUp, LineButton scrollDown)
     {
         var panel = menu.GetChild(0);
         titleField = panel.Find("Title").GetComponent<Text>();
@@ -40,7 +43,7 @@ public class UIManager
         SwitchPage(MainPage);
     }
 
-    public void OnScrollButton(int change)
+    internal void OnScrollButton(int change)
     {
         int newScene = SceneIndex + change;
         if (newScene < 0 || newScene >= MAX_LINES) return;
@@ -48,16 +51,23 @@ public class UIManager
         UpdatePage();
     }
 
-    public void SwitchPage(Type newPageType)
+    /// <summary>
+    /// Tries to find the instance of the type and switches the current page to it
+    /// </summary>
+    public bool SwitchPage(Type newPageType)
     {
         if (newPageType.GetPageInstance() is IPage page)
         {
             SwitchPage(page);
-            return;
+            return true;
         }
         Main.Log("Failed to find pages instance from register", BepInEx.Logging.LogLevel.Error);
+        return false;
     }
 
+    /// <summary>
+    /// Switches the current page to whatever instance of a page is put in.
+    /// </summary>
     public void SwitchPage(IPage newPage)
     {
         if (CurrentPage == newPage) return;

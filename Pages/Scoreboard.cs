@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace MonkeStatistics.Pages;
 
-public class Scoreboard : IPage
+internal class Scoreboard : IPage
 {
     public string GetName() => "Scoreboard";
 

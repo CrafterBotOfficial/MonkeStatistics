@@ -3,9 +3,13 @@ using System.Text;
 
 namespace MonkeStatistics.UI;
 
+    // TODO: Make look fabules
 public partial class PageBuilder
 {
-    // TODO: Make look fabules
+    /// <summary>
+    /// Creates a error page with the error message.
+    /// </summary>
+    /// <returns>Premade page content</returns>
     public static Content GetErrorPage(string errorMessage)
     {
         Main.Log(errorMessage, BepInEx.Logging.LogLevel.Error);
@@ -15,6 +19,10 @@ public partial class PageBuilder
         return builder.GetContent();
     }
 
+    /// <summary>
+    /// Creates a warning page that this mod must be used in a room.
+    /// </summary>
+    /// <returns>Premade page content</returns>
     public static Content GetNotInRoomPage()
     {
         var builder = new PageBuilder();
@@ -22,6 +30,10 @@ public partial class PageBuilder
         return builder.GetContent();
     }
 
+    /// <summary>
+    /// Creates a warning page that this mod cannot be used in a none-modded room.
+    /// </summary>
+    /// <returns>Premade page content</returns>
     public static Content GetNotInModdedRoomPage(IPage calling)
     {
         var builder = new PageBuilder();

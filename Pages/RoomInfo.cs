@@ -8,7 +8,7 @@ using Photon.Pun;
 
 namespace MonkeStatistics.Pages;
 
-public class RoomInfo : IPage
+internal class RoomInfo : IPage
 {
     public string GetName() => "Room Info";
 

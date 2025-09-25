@@ -4,7 +4,7 @@ using MonkeStatistics.UI.Buttons;
 
 namespace MonkeStatistics.Pages;
 
-public class MainPage : IPage
+internal class MainPage : IPage
 {
     public string GetName() => "Monke Statistics";
 
