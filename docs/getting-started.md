@@ -34,3 +34,30 @@ public class MyPage : IPage
 ```
 
 The ``[AutoRegister]`` attribute tells MonkeStatistics to add this page to the main menu. Without it the page would be inaccessible to the player.
+
+## Scroll Pages
+Sometimes your page may need to list a lot of stuff. In this case we can easily build a scrollable page with the following code.
+
+```cs
+[AutoRegister]
+public class MyScrollPage : IPage
+{
+    public string GetName() => "My Chunky Page";
+
+    public Content GetContent()
+    {
+        var scrollBuilder = new ScrollPageBuilder();
+        const int LINE_COUNT = 31;
+        for (int i = 0; i < LINE_COUNT; i++)
+        {
+            scrollBuilder.AddLine($"[{i}] Item", () => {
+                Debug.Log("Hello world from " + i);
+            });
+        }
+
+        return scrollBuilder.GetContent();
+    }
+}
+```
+
+Remember when you use a [ScrollPageBuilder](api/MonkeStatistics.UI.ScrollPageBuilder.html) there will be scroll buttons below your page for the player to use.
