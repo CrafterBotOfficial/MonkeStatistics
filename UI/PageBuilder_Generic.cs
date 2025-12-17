@@ -18,7 +18,7 @@ public partial class PageBuilder
     public static Content GetNotInRoomPage()
     {
         var builder = new PageBuilder();
-        builder.AddText("You must be in a room to do this");
+        builder.AddText("You must be in a room to do this.");
         return builder.GetContent();
     }
 
@@ -26,7 +26,7 @@ public partial class PageBuilder
     {
         var builder = new PageBuilder();
         builder.AddText("Not in modded room");
-        builder.AddText("You must be in a modded room to use " + calling.GetName());
+        builder.AddText("You must be in a modded room to use " + calling.GetName() + ".");
         return builder.GetContent();
     }
 }

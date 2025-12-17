@@ -36,12 +36,14 @@ public class Scoreboard : IPage
         var builder = new PageBuilder();
         builder.SetAuthor("Player Count: " + networkSystem.RoomPlayerCount);
 
-        for (int i = 0; i < networkSystem.RoomPlayerCount; i++)
+        foreach (var player in networkSystem.AllNetPlayers)
         {
-            var player = networkSystem.AllNetPlayers[i];
-            var buttonHandler = new SelectPlayerButtonHandler(player);
-            var line = builder.AddLine(player.SanitizedNickName);
-            line.ButtonHandler = buttonHandler;
+            if (player.IsLocal)
+            {
+                builder.AddLine(player.SanitizedNickName);
+                continue;
+            }
+            builder.AddLine(player.SanitizedNickName, new SelectPlayerButtonHandler(player));
         }
 
         return builder.GetContent();

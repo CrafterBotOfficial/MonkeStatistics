@@ -35,6 +35,15 @@ public class LocalWatchManager : MonoBehaviour
         ReturnButton = result.ReturnButton;
         Lines = result.Lines;
 
+        if (NetworkSystem.Instance is NetworkSystemPUN networkSystem)
+        {
+            var properties = new ExitGames.Client.Photon.Hashtable();
+            if (properties is not null && properties.TryAdd(Main.GUID, Configuration.WatchHand.Value))
+            {
+                networkSystem.GetLocalPlayer().GetPlayerRef().SetCustomProperties(properties);
+            }
+        }
+
         UIManager = new UIManager(Menu, result.up, result.down);
     }
 

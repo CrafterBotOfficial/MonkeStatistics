@@ -28,6 +28,7 @@ internal class WatchSpawner
             if (rig.isLocal || rig.isMyPlayer) continue;
 
             var watch = await Spawn(rig);
+            watch.gameObject.SetActive(false);
             Watches.Add(rig, watch.gameObject);
         }
         VRRig.LocalRig.AddComponent<UI.LocalWatchManager>();
